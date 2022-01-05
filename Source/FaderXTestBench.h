@@ -254,81 +254,56 @@ private:
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OSCReceivers)
 };
-
-class AnnouncementsComponent : public juce::Component
+//==============================================================================
+class OSCSenderPorts : public juce::Component
 {
 public:
-    AnnouncementsComponent()
+    OSCSenderPorts()
     {
-        addAndMakeVisible(descriptionLabel);
+        senderLabelOne.attachToComponent(&rotaryKnobOne, false);
+        addAndMakeVisible(senderLabelOne);
 
-        textEntryBox.setMultiLine(true);
-        textEntryBox.setReturnKeyStartsNewLine(true);
-        textEntryBox.setText("Announcement text.");
-        addAndMakeVisible(textEntryBox);
+        rotaryKnobOne.setRange(0, 127);
+        rotaryKnobOne.setSliderStyle(juce::Slider::RotaryVerticalDrag);
+        rotaryKnobOne.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 150, 25);
+        addAndMakeVisible(rotaryKnobOne);
 
-        priorityComboBox.addItemList({ "Priority - Low", "Priority - Medium", "Priority - High" }, 1);
-        priorityComboBox.setSelectedId(2);
-        addAndMakeVisible(priorityComboBox);
+        senderLabelTwo.attachToComponent(&rotaryKnobTwo, false);
+        addAndMakeVisible(senderLabelTwo);
 
-        announceButton.onClick = [this]
-        {
-            auto priority = [this]
-            {
-                switch (priorityComboBox.getSelectedId())
-                {
-                case 1:   return juce::AccessibilityHandler::AnnouncementPriority::low;
-                case 2:   return juce::AccessibilityHandler::AnnouncementPriority::medium;
-                case 3:   return juce::AccessibilityHandler::AnnouncementPriority::high;
-                }
+        rotaryKnobTwo.setRange(0, 127);
+        rotaryKnobTwo.setSliderStyle(juce::Slider::RotaryVerticalDrag);
+        rotaryKnobTwo.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 150, 25);
+        addAndMakeVisible(rotaryKnobTwo);
 
-                jassertfalse;
-                return juce::AccessibilityHandler::AnnouncementPriority::medium;
-            }();
+        senderLabelThree.attachToComponent(&rotaryKnobThree, false);
+        addAndMakeVisible(senderLabelThree);
 
-            juce::AccessibilityHandler::postAnnouncement(textEntryBox.getText(), priority);
-        };
+        rotaryKnobThree.setRange(0, 127);
+        rotaryKnobThree.setSliderStyle(juce::Slider::RotaryVerticalDrag);
+        rotaryKnobThree.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 150, 25);
+        addAndMakeVisible(rotaryKnobThree);
 
-        addAndMakeVisible(announceButton);
+        senderLabelFour.attachToComponent(&rotaryKnobFour, false);
+        addAndMakeVisible(senderLabelFour);
 
-        setTitle("Announcements");
-        setHelpText("Type some text into the box and click the announce button to have it read out.");
-        setFocusContainerType(FocusContainerType::focusContainer);
+        rotaryKnobFour.setRange(0, 127);
+        rotaryKnobFour.setSliderStyle(juce::Slider::RotaryVerticalDrag);
+        rotaryKnobFour.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 150, 25);
+        addAndMakeVisible(rotaryKnobFour);
     }
-
-    void resized() override
-    {
-        juce::Grid grid;
-
-        grid.templateRows = { juce::Grid::TrackInfo(juce::Grid::Fr(3)),
-                              juce::Grid::TrackInfo(juce::Grid::Fr(1)),
-                              juce::Grid::TrackInfo(juce::Grid::Fr(1)),
-                              juce::Grid::TrackInfo(juce::Grid::Fr(1)),
-                              juce::Grid::TrackInfo(juce::Grid::Fr(1)),
-                              juce::Grid::TrackInfo(juce::Grid::Fr(1)) };
-
-        grid.templateColumns = { juce::Grid::TrackInfo(juce::Grid::Fr(3)),
-                                 juce::Grid::TrackInfo(juce::Grid::Fr(2)) };
-
-        grid.items = { juce::GridItem(descriptionLabel).withMargin(2).withColumn({ juce::GridItem::Span(2), {} }),
-                       juce::GridItem(textEntryBox).withMargin(2).withArea({ 2 }, { 1 }, { 5 }, { 2 }),
-                       juce::GridItem(priorityComboBox).withMargin(2).withArea({ 5 }, { 1 }, { 6 }, { 2 }),
-                       juce::GridItem(announceButton).withMargin(2).withArea({ 4 }, { 2 }, { 5 }, { 3 }) };
-
-        grid.performLayout(getLocalBounds());
-    }
-
 private:
-    juce::Label descriptionLabel{ {}, "This is a demo of posting system announcements that will be read out by an accessibility client.\n\n"
-                                 "You can enter some text to be read out in the text box below, set a priority for the message and then "
-                                 "post it using the \"Announce\" button." };
+    juce::Slider rotaryKnobOne,
+                 rotaryKnobTwo,
+                 rotaryKnobThree,
+                 rotaryKnobFour;
 
-    juce::TextEditor textEntryBox;
-    juce::ComboBox priorityComboBox;
-    juce::TextButton announceButton{ "Announce" };
+    juce::Label senderLabelOne{ {}, "Sender 1" },
+                senderLabelTwo{ {}, "Sender 2" },
+                senderLabelThree{ {}, "Sender 2" },
+                senderLabelFour{ {}, "Sender 2" };
 
-    //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AnnouncementsComponent)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(OSCSenderPorts)
 };
 
 //==============================================================================
@@ -348,13 +323,11 @@ public:
         const auto tabColour1 = getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId).darker(0.1f);
 
         TopTabs.addTab("Senders", tabColour1, &senders, false);
-        TopTabs.addTab("OSC Port Num", tabColour1, &announcementsComponent, false);
         addAndMakeVisible(TopTabs);
 
         const auto tabColour2 = getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId).darker(0.1f);
 
         BottomTabs.addTab("Senders", tabColour2, &receivers, false);
-        //BottomTabs.addTab("OSC Port Num", tabColour, &announcementsComponent, false);
         addAndMakeVisible(BottomTabs);
 
         setSize(800, 400);
@@ -380,9 +353,6 @@ private:
   
     juce::TabbedComponent TopTabs{ juce::TabbedButtonBar::Orientation::TabsAtTop};
     juce::TabbedComponent BottomTabs{ juce::TabbedButtonBar::Orientation::TabsAtTop};
-
-
-    AnnouncementsComponent announcementsComponent;
 
     OSCSenders  senders;
     OSCReceivers receivers;
