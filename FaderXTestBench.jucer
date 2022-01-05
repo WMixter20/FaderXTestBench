@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="HckZTQ" name="FaderXTestBench" projectType="guiapp" useAppConfig="0"
+              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" defines="PIP_JUCE_EXAMPLES_DIRECTORY=RDpcUEZNIFByb2dhbW1pbmdcSlVDRVxleGFtcGxlcw==">
+  <MAINGROUP id="mTgr24" name="FaderXTestBench">
+    <GROUP id="{7FE6E041-79E5-948E-BFFD-B72EDCC9F1B9}" name="Source">
+      <FILE id="nY0GtP" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
+      <FILE id="niRA1e" name="FaderXTestBench.h" compile="0" resource="0"
+            file="Source/FaderXTestBench.h"/>
+    </GROUP>
+  </MAINGROUP>
+  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1"/>
+  <EXPORTFORMATS>
+    <VS2019 targetFolder="Builds/VisualStudio2019">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="FaderXTestBench"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="FaderXTestBench"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_core" path="../../PFM Progamming/JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../PFM Progamming/JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="../../PFM Progamming/JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../PFM Progamming/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../PFM Progamming/JUCE/modules"/>
+        <MODULEPATH id="juce_osc" path="../../PFM Progamming/JUCE/modules"/>
+      </MODULEPATHS>
+    </VS2019>
+  </EXPORTFORMATS>
+  <MODULES>
+    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_osc" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+  </MODULES>
+</JUCERPROJECT>
