@@ -98,10 +98,10 @@ public:
 
     void resized() override
     {
-        rotaryKnobOne.setBoundsRelative(0.00, 0.10, 0.25, 0.80);
-        rotaryKnobTwo.setBoundsRelative(0.25, 0.10, 0.25, 0.80);
-        rotaryKnobThree.setBoundsRelative(0.50, 0.10, 0.25, 0.80);
-        rotaryKnobFour.setBoundsRelative(0.75, 0.10, 0.25, 0.80);
+        rotaryKnobOne.setBoundsRelative(0.00, 0.15, 0.25, 0.80);
+        rotaryKnobTwo.setBoundsRelative(0.25, 0.15, 0.25, 0.80);
+        rotaryKnobThree.setBoundsRelative(0.50, 0.15, 0.25, 0.80);
+        rotaryKnobFour.setBoundsRelative(0.75, 0.15, 0.25, 0.80);
     }
 
 private:
@@ -186,10 +186,11 @@ public:
 
     void resized() override
     {
-        rotaryKnobOne.setBoundsRelative(0.00, 0.10, 0.25, 0.80);
-        rotaryKnobTwo.setBoundsRelative(0.25, 0.10, 0.25, 0.80);
-        rotaryKnobThree.setBoundsRelative(0.50, 0.10, 0.25, 0.80);
-        rotaryKnobFour.setBoundsRelative(0.75, 0.10, 0.25, 0.80);
+        rotaryKnobOne.setBoundsRelative(0.00, 0.15, 0.25, 0.80);
+        rotaryKnobTwo.setBoundsRelative(0.25, 0.15, 0.25, 0.80);
+        rotaryKnobThree.setBoundsRelative(0.50, 0.15, 0.25, 0.80);
+        rotaryKnobFour.setBoundsRelative(0.75, 0.15, 0.25, 0.80);
+
     }
 
     //==============================================================================
@@ -254,6 +255,82 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OSCReceivers)
 };
 
+class AnnouncementsComponent : public juce::Component
+{
+public:
+    AnnouncementsComponent()
+    {
+        addAndMakeVisible(descriptionLabel);
+
+        textEntryBox.setMultiLine(true);
+        textEntryBox.setReturnKeyStartsNewLine(true);
+        textEntryBox.setText("Announcement text.");
+        addAndMakeVisible(textEntryBox);
+
+        priorityComboBox.addItemList({ "Priority - Low", "Priority - Medium", "Priority - High" }, 1);
+        priorityComboBox.setSelectedId(2);
+        addAndMakeVisible(priorityComboBox);
+
+        announceButton.onClick = [this]
+        {
+            auto priority = [this]
+            {
+                switch (priorityComboBox.getSelectedId())
+                {
+                case 1:   return juce::AccessibilityHandler::AnnouncementPriority::low;
+                case 2:   return juce::AccessibilityHandler::AnnouncementPriority::medium;
+                case 3:   return juce::AccessibilityHandler::AnnouncementPriority::high;
+                }
+
+                jassertfalse;
+                return juce::AccessibilityHandler::AnnouncementPriority::medium;
+            }();
+
+            juce::AccessibilityHandler::postAnnouncement(textEntryBox.getText(), priority);
+        };
+
+        addAndMakeVisible(announceButton);
+
+        setTitle("Announcements");
+        setHelpText("Type some text into the box and click the announce button to have it read out.");
+        setFocusContainerType(FocusContainerType::focusContainer);
+    }
+
+    void resized() override
+    {
+        juce::Grid grid;
+
+        grid.templateRows = { juce::Grid::TrackInfo(juce::Grid::Fr(3)),
+                              juce::Grid::TrackInfo(juce::Grid::Fr(1)),
+                              juce::Grid::TrackInfo(juce::Grid::Fr(1)),
+                              juce::Grid::TrackInfo(juce::Grid::Fr(1)),
+                              juce::Grid::TrackInfo(juce::Grid::Fr(1)),
+                              juce::Grid::TrackInfo(juce::Grid::Fr(1)) };
+
+        grid.templateColumns = { juce::Grid::TrackInfo(juce::Grid::Fr(3)),
+                                 juce::Grid::TrackInfo(juce::Grid::Fr(2)) };
+
+        grid.items = { juce::GridItem(descriptionLabel).withMargin(2).withColumn({ juce::GridItem::Span(2), {} }),
+                       juce::GridItem(textEntryBox).withMargin(2).withArea({ 2 }, { 1 }, { 5 }, { 2 }),
+                       juce::GridItem(priorityComboBox).withMargin(2).withArea({ 5 }, { 1 }, { 6 }, { 2 }),
+                       juce::GridItem(announceButton).withMargin(2).withArea({ 4 }, { 2 }, { 5 }, { 3 }) };
+
+        grid.performLayout(getLocalBounds());
+    }
+
+private:
+    juce::Label descriptionLabel{ {}, "This is a demo of posting system announcements that will be read out by an accessibility client.\n\n"
+                                 "You can enter some text to be read out in the text box below, set a priority for the message and then "
+                                 "post it using the \"Announce\" button." };
+
+    juce::TextEditor textEntryBox;
+    juce::ComboBox priorityComboBox;
+    juce::TextButton announceButton{ "Announce" };
+
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AnnouncementsComponent)
+};
+
 //==============================================================================
 class FaderXTestBench : public juce::Component
 {
@@ -264,8 +341,24 @@ public:
         addAndMakeVisible(receivers);
         addAndMakeVisible(senders);
 
+        TopTabs.setTitle("Test1");
+        BottomTabs.setTitle("Test2");
+
+
+        const auto tabColour1 = getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId).darker(0.1f);
+
+        TopTabs.addTab("Senders", tabColour1, &senders, false);
+        TopTabs.addTab("OSC Port Num", tabColour1, &announcementsComponent, false);
+        addAndMakeVisible(TopTabs);
+
+        const auto tabColour2 = getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId).darker(0.1f);
+
+        BottomTabs.addTab("Senders", tabColour2, &receivers, false);
+        //BottomTabs.addTab("OSC Port Num", tabColour, &announcementsComponent, false);
+        addAndMakeVisible(BottomTabs);
+
         setSize(800, 400);
-    }
+    } 
 
     void resized() override
     {
@@ -274,14 +367,23 @@ public:
         auto lowerBounds = bounds.removeFromBottom(getHeight() / 2);
         //auto halfBounds = bounds.removeFromRight(getWidth() / 2);
 
-        senders.setBounds(bounds);
-        receivers.setBounds(lowerBounds);
+        TopTabs.setBounds(bounds);
+        BottomTabs.setBounds(lowerBounds);
+
+       // senders.setBounds(bounds);
+       // receivers.setBounds(lowerBounds);
 
         //monitor.setBounds(lowerBounds.removeFromTop(getHeight() / 2));
     }
 
 private:
   
+    juce::TabbedComponent TopTabs{ juce::TabbedButtonBar::Orientation::TabsAtTop};
+    juce::TabbedComponent BottomTabs{ juce::TabbedButtonBar::Orientation::TabsAtTop};
+
+
+    AnnouncementsComponent announcementsComponent;
+
     OSCSenders  senders;
     OSCReceivers receivers;
 
