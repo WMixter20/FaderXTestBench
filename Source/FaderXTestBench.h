@@ -124,13 +124,10 @@ private:
                senderLabelThree{ {}, "Sender 2" },
                senderLabelFour{ {}, "Sender 2" };
 
-
     juce::OSCSender senderOne,
                     senderTwo, 
                     senderThree, 
                     senderFour;
-
-
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(OSCSenders)
 };
