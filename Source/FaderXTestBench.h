@@ -282,7 +282,7 @@ public:
 
         const auto tabColour2 = getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId).darker(0.1f);
 
-        BottomTabs.addTab("Recievers", tabColour2, &receivers, false);
+        BottomTabs.addTab("Senders", tabColour2, &receivers, false);
         addAndMakeVisible(BottomTabs);
 
         setSize(800, 400);
