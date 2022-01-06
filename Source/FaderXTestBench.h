@@ -3,7 +3,7 @@
 
 //#include <JuceHeader.h>
 int senderPortNum = 9000;
-//int currentPortNumber = -1;
+int currentPortNumber = -1;
 //==============================================================================
 /*
     This component lives inside our window, and this is where you should put all
@@ -285,7 +285,10 @@ public:
         updateConnectionStatusLabel();
         addAndMakeVisible(connectionStatusLabel);
 
-
+        portNumberField.onTextChange = [this]
+        {
+            senderPortNum = portNumberField.getText().getIntValue();
+        };
         
 
         oscReceiver.addListener(this);
@@ -317,7 +320,7 @@ private:
     
     juce::OSCReceiver oscReceiver;
 
-    int currentPortNumber = -1;
+    //int currentPortNumber = -1;
 
     //==============================================================================
     void connectButtonClicked()
@@ -442,133 +445,7 @@ private:
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(OSCMonitorDemo)
 };
-class OSCLogListBox : public juce::ListBox,
-                      private juce::ListBoxModel,
-                      private juce::AsyncUpdater
-{
-public:
-    OSCLogListBox()
-    {
-        setModel(this);
-    }
 
-    ~OSCLogListBox() override = default;
-
-    //==============================================================================
-    int getNumRows() override
-    {
-        return oscLogList.size();
-    }
-
-    //==============================================================================
-
-
-    //==============================================================================
-    void addOSCMessage(const juce::OSCMessage& message, int level = 0)
-    {
-        oscLogList.add(getIndentationString(level)
-            + "- osc message, address = '"
-            + message.getAddressPattern().toString()
-            + "', "
-            + juce::String(message.size())
-            + " argument(s)");
-
-        if (!message.isEmpty())
-        {
-            for (auto& arg : message)
-                addOSCMessageArgument(arg, level + 1);
-        }
-
-        triggerAsyncUpdate();
-    }
-
-    //==============================================================================
-    void addOSCBundle(const juce::OSCBundle& bundle, int level = 0)
-    {
-        juce::OSCTimeTag timeTag = bundle.getTimeTag();
-
-        oscLogList.add(getIndentationString(level)
-            + "- osc bundle, time tag = "
-            + timeTag.toTime().toString(true, true, true, true));
-
-        for (auto& element : bundle)
-        {
-            if (element.isMessage())
-                addOSCMessage(element.getMessage(), level + 1);
-            else if (element.isBundle())
-                addOSCBundle(element.getBundle(), level + 1);
-        }
-
-        triggerAsyncUpdate();
-    }
-
-    //==============================================================================
-    void addOSCMessageArgument(const juce::OSCArgument& arg, int level)
-    {
-        juce::String typeAsString;
-        juce::String valueAsString;
-
-        if (arg.isFloat32())
-        {
-            typeAsString = "float32";
-            valueAsString = juce::String(arg.getFloat32());
-        }
-        else if (arg.isInt32())
-        {
-            typeAsString = "int32";
-            valueAsString = juce::String(arg.getInt32());
-        }
-        else if (arg.isString())
-        {
-            typeAsString = "string";
-            valueAsString = arg.getString();
-        }
-        else if (arg.isBlob())
-        {
-            typeAsString = "blob";
-            auto& blob = arg.getBlob();
-            valueAsString = juce::String::fromUTF8((const char*)blob.getData(), (int)blob.getSize());
-        }
-        else
-        {
-            typeAsString = "(unknown)";
-        }
-
-        oscLogList.add(getIndentationString(level + 1) + "- " + typeAsString.paddedRight(' ', 12) + valueAsString);
-    }
-
-    //==============================================================================
-    void addInvalidOSCPacket(const char* /* data */, int dataSize)
-    {
-        oscLogList.add("- (" + juce::String(dataSize) + "bytes with invalid format)");
-    }
-
-    //==============================================================================
-    void clear()
-    {
-        oscLogList.clear();
-        triggerAsyncUpdate();
-    }
-
-    //==============================================================================
-    void handleAsyncUpdate() override
-    {
-        updateContent();
-        scrollToEnsureRowIsOnscreen(oscLogList.size() - 1);
-        repaint();
-    }
-
-private:
-    static juce::String getIndentationString(int level)
-    {
-        return juce::String().paddedRight(' ', 2 * level);
-    }
-
-    //==============================================================================
-    juce::StringArray oscLogList;
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(OSCLogListBox)
-};
 
 
 //==============================================================================
