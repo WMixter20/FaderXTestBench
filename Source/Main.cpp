@@ -18,9 +18,7 @@ public:
 
     const juce::String getApplicationName() override       { return "Fader X Test Bench"; }
     const juce::String getApplicationVersion() override    { return ProjectInfo::versionString; }
-    //bool moreThanOneInstanceAllowed() override             { return true; }
 
-    //==============================================================================
     void initialise (const juce::String&) override
     {
         mainWindow.reset(new MainWindow("FaderX TestBench", new FaderXTestBench, *this));
@@ -28,11 +26,10 @@ public:
 
     void shutdown() override
     {
-        // Add your application's shutdown code here..
 
         mainWindow = nullptr; // (deletes our window)
     }
-
+private:
     //==============================================================================
     class MainWindow    : public juce::DocumentWindow
     {
@@ -68,7 +65,7 @@ public:
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainWindow)
     };
 
-private:
+
     std::unique_ptr<MainWindow> mainWindow;
 };
 
