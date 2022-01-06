@@ -291,6 +291,7 @@ public:
         oscReceiver.addListener(this);
         oscReceiver.registerFormatErrorHandler([this](const char* data, int dataSize)
             {
+                //oscLogListBox.addInvalidOSCPacket(data, dataSize);
             });
     }
     void resized()
@@ -300,6 +301,7 @@ public:
         connectButton.setBounds(210, 18, 100, 25);
         clearButton.setBounds(320, 18, 60, 25);
         connectionStatusLabel.setBounds(450, 18, 240, 25);
+        //oscLogListBox.setBounds(0, 60, 700, 340);
 
 
     }
@@ -331,15 +333,18 @@ private:
     //==============================================================================
     void clearButtonClicked()
     {
+        //oscLogListBox.clear();
     }
 
     //==============================================================================
     void oscMessageReceived(const juce::OSCMessage& message) override
     {
+        //oscLogListBox.addOSCMessage(message);
     }
 
     void oscBundleReceived(const juce::OSCBundle& bundle) override
     {
+        //oscLogListBox.addOSCBundle(bundle);
     }
 
     //==============================================================================
