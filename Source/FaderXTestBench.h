@@ -15,6 +15,8 @@ public:
     //==============================================================================
     OSCSenders()
     {
+        
+
         senderLabelOne.attachToComponent(&rotaryKnobOne, false);
         addAndMakeVisible (senderLabelOne);
 
@@ -54,7 +56,7 @@ public:
                 showConnectionErrorMessage("Error: could not send OSC message.");
            
             };
-        if (!senderOne.connect("10.0.0.106", 9000))                                             //Target/Port of Knob 1 for TouchOSC
+        if (!senderOne.connect("10.0.0.106", senderPortNum))                                             //Target/Port of Knob 1 for TouchOSC
             showConnectionErrorMessage("Error: could n  ot connect to UDP port 9000.");
 
         //if (!senderOne.connect("127.0.0.1", 8000))                                             //Target/Port of Knob 1
@@ -68,7 +70,7 @@ public:
                 showConnectionErrorMessage("Error: could not send OSC message.");
         };
 
-        if (!senderTwo.connect("10.0.0.106", 9000))                                             //Target/Port of Knob 2
+        if (!senderTwo.connect("10.0.0.106", senderPortNum))                                             //Target/Port of Knob 2
             showConnectionErrorMessage("Error: could not connect to UDP port 9000.");
 
         //==============================================================================
@@ -79,7 +81,7 @@ public:
                 showConnectionErrorMessage("Error: could not send OSC message.");
         };
 
-        if (!senderThree.connect("10.0.0.106", 9000))                                           //Target/Port of Knob 3
+        if (!senderThree.connect("10.0.0.106", senderPortNum))                                           //Target/Port of Knob 3
             showConnectionErrorMessage("Error: could not connect to UDP port 9000.");
 
         //==============================================================================
@@ -90,10 +92,10 @@ public:
                 showConnectionErrorMessage("Error: could not send OSC message.");
         };
 
-        if (!senderFour.connect("10.0.0.106", 9000))                                            //Target/Port of Knob 4
+        if (!senderFour.connect("10.0.0.106", senderPortNum))                                            //Target/Port of Knob 4
             showConnectionErrorMessage("Error: could not connect to UDP port 9000.");
 
-
+        
     }
 
     void resized() override
@@ -128,6 +130,8 @@ private:
                     senderTwo, 
                     senderThree, 
                     senderFour;
+
+    int senderPortNum = 9000;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(OSCSenders)
 };
@@ -255,56 +259,7 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OSCReceivers)
 };
 //==============================================================================
-class OSCSenderPorts : public juce::Component
-{
-public:
-    OSCSenderPorts()
-    {
-        senderLabelOne.attachToComponent(&rotaryKnobOne, false);
-        addAndMakeVisible(senderLabelOne);
 
-        rotaryKnobOne.setRange(0, 127);
-        rotaryKnobOne.setSliderStyle(juce::Slider::RotaryVerticalDrag);
-        rotaryKnobOne.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 150, 25);
-        addAndMakeVisible(rotaryKnobOne);
-
-        senderLabelTwo.attachToComponent(&rotaryKnobTwo, false);
-        addAndMakeVisible(senderLabelTwo);
-
-        rotaryKnobTwo.setRange(0, 127);
-        rotaryKnobTwo.setSliderStyle(juce::Slider::RotaryVerticalDrag);
-        rotaryKnobTwo.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 150, 25);
-        addAndMakeVisible(rotaryKnobTwo);
-
-        senderLabelThree.attachToComponent(&rotaryKnobThree, false);
-        addAndMakeVisible(senderLabelThree);
-
-        rotaryKnobThree.setRange(0, 127);
-        rotaryKnobThree.setSliderStyle(juce::Slider::RotaryVerticalDrag);
-        rotaryKnobThree.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 150, 25);
-        addAndMakeVisible(rotaryKnobThree);
-
-        senderLabelFour.attachToComponent(&rotaryKnobFour, false);
-        addAndMakeVisible(senderLabelFour);
-
-        rotaryKnobFour.setRange(0, 127);
-        rotaryKnobFour.setSliderStyle(juce::Slider::RotaryVerticalDrag);
-        rotaryKnobFour.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 150, 25);
-        addAndMakeVisible(rotaryKnobFour);
-    }
-private:
-    juce::Slider rotaryKnobOne,
-                 rotaryKnobTwo,
-                 rotaryKnobThree,
-                 rotaryKnobFour;
-
-    juce::Label senderLabelOne{ {}, "Sender 1" },
-                senderLabelTwo{ {}, "Sender 2" },
-                senderLabelThree{ {}, "Sender 2" },
-                senderLabelFour{ {}, "Sender 2" };
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(OSCSenderPorts)
-};
 
 //==============================================================================
 class FaderXTestBench : public juce::Component
@@ -327,7 +282,7 @@ public:
 
         const auto tabColour2 = getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId).darker(0.1f);
 
-        BottomTabs.addTab("Senders", tabColour2, &receivers, false);
+        BottomTabs.addTab("Recievers", tabColour2, &receivers, false);
         addAndMakeVisible(BottomTabs);
 
         setSize(800, 400);
