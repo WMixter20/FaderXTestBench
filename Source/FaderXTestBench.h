@@ -178,7 +178,7 @@ public:
         addAndMakeVisible(rotaryKnobFour);
 
         //==============================================================================
-        if (!connect(8000))                                                                     //Port for Receivers
+        if (!connect(9999))  //8000 works with touch bridge                                                                   //Port for Receivers
             showConnectionErrorMessage("Error: could not connect to UDP port 8000.");
 
 
@@ -445,12 +445,6 @@ private:
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(OSCMonitorDemo)
 };
-
-
-
-//==============================================================================
-
-
 //==============================================================================
 class FaderXTestBench : public juce::Component
 {
@@ -474,7 +468,7 @@ public:
 
         const auto tabColour2 = getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId).darker(0.1f);
 
-        BottomTabs.addTab("Senders", tabColour2, &receivers, false);
+        BottomTabs.addTab("Recievers", tabColour2, &receivers, false);
         addAndMakeVisible(BottomTabs);
 
         setSize(800, 400);
