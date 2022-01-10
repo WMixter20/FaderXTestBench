@@ -9,7 +9,6 @@ int currentPortNumber = -1;
     This component lives inside our window, and this is where you should put all
     your controls and content.
 */
-
 class OSCSenders : public juce::Component
 {
 public:
@@ -445,6 +444,67 @@ private:
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(OSCMonitorDemo)
 };
+class OSCMonitorDemo2 : public juce::Component
+                        
+{
+public:
+    //==============================================================================
+    OSCMonitorDemo2()
+    {
+        //get a list of serial ports installed on the system, as a StringPairArray containing a friendly name and the port path
+        juce::StringPairArray portlist = SerialPort::getSerialPortPaths();
+        if (portlist.size())
+        {
+            //open the first port on the system
+            SerialPort* pSP = new SerialPort(portlist.getAllValues()[0], SerialPortConfig(9600, 8, SerialPortConfig::SERIALPORT_PARITY_NONE, SerialPortConfig::STOPBITS_1, SerialPortConfig::FLOWCONTROL_NONE));
+            if (pSP->exists())
+            {
+                //create streams for reading/writing
+                SerialPortOutputStream* pOutputStream = new SerialPortOutputStream(pSP);
+                SerialPortInputStream* pInputStream = new SerialPortInputStream(pSP);
+
+                pOutputStream->write("hello world via serial", 22); //write some bytes
+
+                //read chars one at a time:
+                char c;
+                while (!pInputStream->isExhausted())
+                    pInputStream->read(&c, 1);
+
+                //or, read line by line:
+                String s;
+                while (pInputStream->canReadLine())
+                    s = pInputStream->readNextLine();
+
+                //or ask to be notified when a new line is available:
+                pInputStreams->addChangeListener(this); //we must be a ChangeListener to receive notifications
+                pInputStream->setNotify(SerialPortInputStream::NOTIFY_ON_CHAR, '\n');
+
+                //or ask to be notified whenever any character is received
+                //NOTE - use with care at high baud rates!!!!
+                pInputStream->setNotify(SerialPortInputStream::NOTIFY_ALWAYS);
+
+                //please see class definitions for other features/functions etc		
+            }
+        }
+    }
+    //==============================================================================
+private:
+    // Your private member variables go here...
+    juce::TextButton sendButton;
+    juce::TextButton getButton;
+    juce::TextButton loadButton;
+    juce::TextButton saveButton;
+    juce::Rectangle<int> buttonsArea;
+    juce::Label textLabel{ {}, "Serial Ports" };
+    juce::Font textFont{ 16.0f };
+    juce::ComboBox serialPortMenu;
+    juce::StringPairArray portlist;
+    //SerialPort* pSP;
+    SerialPortOutputStream* pOutputStream;
+    SerialPortInputStream* pInputStream;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(OSCMonitorDemo2)
+};
 //==============================================================================
 class FaderXTestBench : public juce::Component
 {
@@ -455,6 +515,7 @@ public:
         addAndMakeVisible(receivers);
         addAndMakeVisible(senders);
         addAndMakeVisible(oscMonitor);
+        //addAndMakeVisible(oscMonitor2);
 
         TopTabs.setTitle("Test1");
         BottomTabs.setTitle("Test2");
@@ -469,6 +530,7 @@ public:
         const auto tabColour2 = getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId).darker(0.1f);
 
         BottomTabs.addTab("Recievers", tabColour2, &receivers, false);
+       // BottomTabs.addTab("Serial Ports", tabColour2, &oscMonitor2, false);
         addAndMakeVisible(BottomTabs);
 
         setSize(800, 400);
@@ -499,6 +561,7 @@ private:
     OSCSenders  senders;
     OSCReceivers receivers;
     OSCMonitorDemo oscMonitor;
+    //OSCMonitorDemo2 oscMonitor2;
    
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FaderXTestBench)

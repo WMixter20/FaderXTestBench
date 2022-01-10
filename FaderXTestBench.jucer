@@ -4,6 +4,26 @@
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" defines="PIP_JUCE_EXAMPLES_DIRECTORY=RDpcUEZNIFByb2dhbW1pbmdcSlVDRVxleGFtcGxlcw==">
   <MAINGROUP id="mTgr24" name="FaderXTestBench">
     <GROUP id="{7FE6E041-79E5-948E-BFFD-B72EDCC9F1B9}" name="Source">
+      <GROUP id="{6196335C-6D3A-198A-FD5A-9636D56C1DC1}" name="juce_serial">
+        <GROUP id="{79C3CF0D-D350-AF91-4180-5D969F6A816D}" name="com">
+          <GROUP id="{70EDFC1A-F030-80B0-7E36-0C16BE6306B3}" name="artiphon">
+            <GROUP id="{857EDFEA-08F3-6429-8117-9FB7617603FE}" name="juce_serial">
+              <FILE id="KRxqIm" name="UsbSerialHelper.java" compile="0" resource="1"
+                    file="../../Libraries/juce_serial/com/artiphon/juce_serial/UsbSerialHelper.java"/>
+            </GROUP>
+          </GROUP>
+        </GROUP>
+        <FILE id="rPcyfY" name="juce_serialport.h" compile="0" resource="0"
+              file="../../Libraries/juce_serial/juce_serialport.h"/>
+        <FILE id="bW7FbH" name="juce_serialport_Android.cpp" compile="1" resource="0"
+              file="../../Libraries/juce_serial/juce_serialport_Android.cpp"/>
+        <FILE id="efTE3N" name="juce_serialport_iOS.cpp" compile="1" resource="0"
+              file="../../Libraries/juce_serial/juce_serialport_iOS.cpp"/>
+        <FILE id="NmQ9UC" name="juce_serialport_OSX.cpp" compile="1" resource="0"
+              file="../../Libraries/juce_serial/juce_serialport_OSX.cpp"/>
+        <FILE id="X34EXS" name="juce_serialport_Windows.cpp" compile="1" resource="0"
+              file="../../Libraries/juce_serial/juce_serialport_Windows.cpp"/>
+      </GROUP>
       <FILE id="nY0GtP" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
       <FILE id="niRA1e" name="FaderXTestBench.h" compile="0" resource="0"
             file="Source/FaderXTestBench.h"/>
@@ -13,7 +33,7 @@
   <EXPORTFORMATS>
     <VS2019 targetFolder="Builds/VisualStudio2019">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="FaderXTestBench"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="FaderXTestBench" headerPath="D:\Libraries\juce_serial"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="FaderXTestBench"/>
       </CONFIGURATIONS>
       <MODULEPATHS>

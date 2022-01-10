@@ -8,6 +8,7 @@
 
 #include <JuceHeader.h>
 #include "FaderXTestBench.h"
+#include "juce_serialport.h"
 
 //==============================================================================
 class Application  : public juce::JUCEApplication
