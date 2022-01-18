@@ -2,13 +2,14 @@
 
 
 //#include <JuceHeader.h>
-int senderPortNum = 9000;
+int senderPortNum = 9000; //9000 for Touch OSC
+int recevierPortNum = 8000; //8000 For Touch OSC 
+                            //8000 works with touch bridge  (make sure local host is sleceted)  
+
+juce::String senderPortIP = "192.168.86.48"; // Target local IP 
+
 int currentPortNumber = -1;
-//==============================================================================
-/*
-    This component lives inside our window, and this is where you should put all
-    your controls and content.
-*/
+
 class OSCSenders : public juce::Component
 {
 public:
@@ -56,12 +57,9 @@ public:
                 showConnectionErrorMessage("Error: could not send OSC message.");
            
             };
-        if (!senderOne.connect("10.0.0.106", senderPortNum))                                             //Target/Port of Knob 1 for TouchOSC
+        if (!senderOne.connect(senderPortIP, senderPortNum))                                             //Target/Port of Knob 1
             showConnectionErrorMessage("Error: could n  ot connect to UDP port 9000.");
 
-        //if (!senderOne.connect("127.0.0.1", 8000))                                             //Target/Port of Knob 1
-           // showConnectionErrorMessage("Error: could n  ot connect to UDP port 9001.");
-       
         //==============================================================================
 
         rotaryKnobTwo.onValueChange = [this]                                                   //OSC Message of Knob 2
@@ -70,7 +68,7 @@ public:
                 showConnectionErrorMessage("Error: could not send OSC message.");
         };
 
-        if (!senderTwo.connect("10.0.0.106", senderPortNum))                                             //Target/Port of Knob 2
+        if (!senderTwo.connect(senderPortIP, senderPortNum))                                             //Target/Port of Knob 2
             showConnectionErrorMessage("Error: could not connect to UDP port 9000.");
 
         //==============================================================================
@@ -81,7 +79,7 @@ public:
                 showConnectionErrorMessage("Error: could not send OSC message.");
         };
 
-        if (!senderThree.connect("10.0.0.106", senderPortNum))                                           //Target/Port of Knob 3
+        if (!senderThree.connect(senderPortIP, senderPortNum))                                           //Target/Port of Knob 3
             showConnectionErrorMessage("Error: could not connect to UDP port 9000.");
 
         //==============================================================================
@@ -92,7 +90,7 @@ public:
                 showConnectionErrorMessage("Error: could not send OSC message.");
         };
 
-        if (!senderFour.connect("10.0.0.106", senderPortNum))                                            //Target/Port of Knob 4
+        if (!senderFour.connect(senderPortIP, senderPortNum))                                            //Target/Port of Knob 4
             showConnectionErrorMessage("Error: could not connect to UDP port 9000.");
 
         
@@ -105,6 +103,8 @@ public:
         rotaryKnobThree.setBoundsRelative(0.50, 0.15, 0.25, 0.80);
         rotaryKnobFour.setBoundsRelative(0.75, 0.15, 0.25, 0.80);
     }
+
+
 
 private:
     //==============================================================================
@@ -177,8 +177,8 @@ public:
         addAndMakeVisible(rotaryKnobFour);
 
         //==============================================================================
-        if (!connect(9999))  //8000 works with touch bridge                                                                   //Port for Receivers
-            showConnectionErrorMessage("Error: could not connect to UDP port 8000.");
+        if (!connect(recevierPortNum))                                                               //Port for Receivers
+            showConnectionErrorMessage("Error: could not connect to UDP port " + recevierPortNum);
 
 
         addListener(this, "/1/fader1");                                                         //Message/Adress for Knob 1
@@ -259,18 +259,16 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OSCReceivers)
 };
 //==============================================================================
-class OSCMonitorDemo : public juce::Component,
+class OSCSenderPortControl : public juce::Component,
                        private juce::OSCReceiver::Listener<juce::OSCReceiver::MessageLoopCallback>
 {
 public:
     //==============================================================================
-    OSCMonitorDemo()
+    OSCSenderPortControl()
     {
 
         addAndMakeVisible(portNumberLabel);
-
-        portNumberField.setEditable(true, true, true);
-
+        portNumberField.setEditable(true, true, true);                               //THIS LABEL I want to use to change senderPortNum Not WORKING
         addAndMakeVisible(portNumberField);
 
 
@@ -278,8 +276,7 @@ public:
         connectButton.onClick = [this] { connectButtonClicked(); };
 
 
-        addAndMakeVisible(clearButton);
-        clearButton.onClick = [this] { clearButtonClicked(); };
+
 
         updateConnectionStatusLabel();
         addAndMakeVisible(connectionStatusLabel);
@@ -291,17 +288,14 @@ public:
         
 
         oscReceiver.addListener(this);
-        oscReceiver.registerFormatErrorHandler([this](const char* data, int dataSize)
-            {
-                //oscLogListBox.addInvalidOSCPacket(data, dataSize);
-            });
+
     }
     void resized()
     {
         portNumberLabel.setBounds(10, 18, 130, 25);
         portNumberField.setBounds(140, 18, 50, 25);
         connectButton.setBounds(210, 18, 100, 25);
-        clearButton.setBounds(320, 18, 60, 25);
+
         connectionStatusLabel.setBounds(450, 18, 240, 25);
         //oscLogListBox.setBounds(0, 60, 700, 340);
 
@@ -310,20 +304,21 @@ public:
 
 private:
     //==============================================================================
-    juce::Label portNumberLabel{ {}, "UDP Port Number: " };
+    juce::Label portNumberLabel{ {}, "Sender Port Number: " };
     juce::Label portNumberField{ {}, "9002" };
     juce::TextButton connectButton{ "Connect" };
-    juce::TextButton clearButton{ "Clear" };
     juce::Label connectionStatusLabel;
 
     
     juce::OSCReceiver oscReceiver;
+    OSCSenders senders;
 
     //int currentPortNumber = -1;
 
     //==============================================================================
     void connectButtonClicked()
     {
+
         if (!isConnected())
             connect();
         else
@@ -360,9 +355,10 @@ private:
             return;
         }
 
-        if (oscReceiver.connect(portToConnect))
+        if (isValidOscPort(portToConnect))
         {
             currentPortNumber = portToConnect;
+            senderPortNum = currentPortNumber;
             connectButton.setButtonText("Disconnect");
         }
         else
@@ -377,6 +373,7 @@ private:
         if (oscReceiver.disconnect())
         {
             currentPortNumber = -1;
+            senderPortNum = currentPortNumber;
             connectButton.setButtonText("Connect");
         }
         else
@@ -442,14 +439,15 @@ private:
         connectionStatusLabel.setJustificationType(juce::Justification::centredRight);
     }
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(OSCMonitorDemo)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(OSCSenderPortControl)
 };
-class OSCMonitorDemo2 : public juce::Component
+/*
+class SerialDATA : public juce::Component
                         
 {
 public:
     //==============================================================================
-    OSCMonitorDemo2()
+    SerialDATA()
     {
         //get a list of serial ports installed on the system, as a StringPairArray containing a friendly name and the port path
         juce::StringPairArray portlist = SerialPort::getSerialPortPaths();
@@ -471,7 +469,7 @@ public:
                     pInputStream->read(&c, 1);
 
                 //or, read line by line:
-                String s;
+                juce::String s;
                 while (pInputStream->canReadLine())
                     s = pInputStream->readNextLine();
 
@@ -503,10 +501,11 @@ private:
     SerialPortOutputStream* pOutputStream;
     SerialPortInputStream* pInputStream;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(OSCMonitorDemo2)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SerialDATA)
 };
+*/
 //==============================================================================
-class FaderXTestBench : public juce::Component
+class FaderXTestBench : public juce::Component                                                  //Complies Code into GUI
 {
 public:
     FaderXTestBench()
@@ -514,8 +513,8 @@ public:
         //addAndMakeVisible(monitor);
         addAndMakeVisible(receivers);
         addAndMakeVisible(senders);
-        addAndMakeVisible(oscMonitor);
-        //addAndMakeVisible(oscMonitor2);
+        addAndMakeVisible(senderPortControl);
+        //addAndMakeVisible(SerialDATA);
 
         TopTabs.setTitle("Test1");
         BottomTabs.setTitle("Test2");
@@ -524,13 +523,13 @@ public:
         const auto tabColour1 = getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId).darker(0.1f);
 
         TopTabs.addTab("Senders", tabColour1, &senders, false);
-        TopTabs.addTab("OSCMonitor", tabColour1, &oscMonitor, false);
+        TopTabs.addTab("OSC Ports", tabColour1, &senderPortControl, false);
         addAndMakeVisible(TopTabs);
 
         const auto tabColour2 = getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId).darker(0.1f);
 
         BottomTabs.addTab("Recievers", tabColour2, &receivers, false);
-       // BottomTabs.addTab("Serial Ports", tabColour2, &oscMonitor2, false);
+       // BottomTabs.addTab("Serial Ports", tabColour2, &SerialDATA, false);
         addAndMakeVisible(BottomTabs);
 
         setSize(800, 400);
@@ -560,8 +559,8 @@ private:
 
     OSCSenders  senders;
     OSCReceivers receivers;
-    OSCMonitorDemo oscMonitor;
-    //OSCMonitorDemo2 oscMonitor2;
+    OSCSenderPortControl senderPortControl;
+    //OSCMonitorDemo2 SerialDATA;
    
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FaderXTestBench)
