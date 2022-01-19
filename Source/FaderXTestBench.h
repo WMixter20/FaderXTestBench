@@ -441,7 +441,7 @@ private:
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(OSCSenderPortControl)
 };
-/*
+
 class SerialDATA : public juce::Component
                         
 {
@@ -454,7 +454,7 @@ public:
         if (portlist.size())
         {
             //open the first port on the system
-            SerialPort* pSP = new SerialPort(portlist.getAllValues()[0], SerialPortConfig(9600, 8, SerialPortConfig::SERIALPORT_PARITY_NONE, SerialPortConfig::STOPBITS_1, SerialPortConfig::FLOWCONTROL_NONE));
+            SerialPort* pSP = new SerialPort(portlist.getAllValues()[0], SerialPortConfig(9600, 8, SerialPortConfig::SERIALPORT_PARITY_NONE, SerialPortConfig::STOPBITS_1, SerialPortConfig::FLOWCONTROL_NONE));                    // Error Message 1
             if (pSP->exists())
             {
                 //create streams for reading/writing
@@ -474,7 +474,7 @@ public:
                     s = pInputStream->readNextLine();
 
                 //or ask to be notified when a new line is available:
-                pInputStreams->addChangeListener(this); //we must be a ChangeListener to receive notifications
+                pInputStreams->addChangeListener(this); //we must be a ChangeListener to receive notifications                                                                                                                      //Error Message 2
                 pInputStream->setNotify(SerialPortInputStream::NOTIFY_ON_CHAR, '\n');
 
                 //or ask to be notified whenever any character is received
@@ -485,6 +485,7 @@ public:
             }
         }
     }
+
     //==============================================================================
 private:
     // Your private member variables go here...
